@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 import { Navigate } from "react-router-dom";
 
-function WelcomePage(props: any){
+const WelcomePage = (props: any) => {
     const [goToQuestion, setGoToQuestion] = React.useState(false);
 
     if(goToQuestion){
@@ -15,7 +15,7 @@ function WelcomePage(props: any){
             <Button variant="outline-primary" size="lg" onClick={()=>{
                 setGoToQuestion(true);
             }}>
-                Start</Button>{' '}
+                Start</Button>
         </div>
     );
 }

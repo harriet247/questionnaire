@@ -1,47 +1,47 @@
 [
     {
         "title": "How many times do you work out in a week?",
-        "optional": "0",
+        "optional": false,
         "type": "number"
     },
     {
         "title": "How often do you read (a book/magazine)?",
-        "optional": "1",
+        "optional": true,
         "type": "number"
     },
     {
         "title": "How many cups of coffee do you drink in a day?",
-        "optional": "1",
+        "optional": true,
         "type": "number"
     },
     {
         "title": "Describe your stress level.",
-        "optional": "1",
+        "optional": false,
         "type": "sentence"
     },
     {
         "title": "List out your chronical symptons/diseaases (if any)",
-        "optional": "1",
+        "optional": true,
         "type": "sentence"
     },
     {
-        "title": "When do you usually sleep?",
-        "optional": "0",
-        "type": "selectDrop"
+        "title": "Do you usually feel energetic after waking up in the morning?",
+        "optional": false,
+        "type": "yesno"
     },
     {
-        "title": "When do you usually wake up?",
-        "optional": "0",
-        "type": "selectDrop"
+        "title": "How often do you stay up late in weekdays?",
+        "optional": false,
+        "type": "number"
     },
     {
         "title": "Do you drink more than 2 drinks in a week?",
-        "optional": "0",
+        "optional": false,
         "type": "yesno"
     },
     {
         "title": "Do you use any other substances more than once a week?",
-        "optional": "0",
+        "optional": false,
         "type": "yesno"
     }
 ]
