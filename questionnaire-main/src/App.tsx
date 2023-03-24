@@ -5,6 +5,7 @@ import './App.css';
 
 import WelcomePage from './views/welcomePage';
 import QuestionPage from './views/questionPage';
+import questionList from "./questoinList.json";
 
 
 const Backgroud = styled.div`
@@ -28,7 +29,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<WelcomePage />}/>
-          <Route path="/question" element={<QuestionPage />}/>
+          <Route path="/question/:id" element={<QuestionPage props={questionList} />}/>
         </Routes>
       </Router>
       </Backgroud>

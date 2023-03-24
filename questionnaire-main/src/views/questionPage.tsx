@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import { ProgressBar, Button, Nav, NavItem, Navbar } from 'react-bootstrap';
+import {useParams} from "react-router-dom";
+import { Alert, ProgressBar, Button, Nav } from 'react-bootstrap';
 import styled from "styled-components";
-import questionList from "../questoinList.json";
 import Question from "../components/question";
 
 const Backgroud = styled.div`
@@ -78,13 +78,34 @@ min-height: 80%;
 align-items: center;
 justify-content: center;
 `;
+// get the first 5 questions from a random list of questions
+
+// const currentList = RandomQuestion(questionList);
 
 const QuestionPage = (props: any) => {
+    const { id } = useParams();
+
+    const [currentList, setCurrentList] =  useState<any[]>([{
+        "title": "",
+        "optional": false,
+        "type": "sentence"
+    }]);
     const [currentProgress, setCurrentProgress] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState(0);
+    const [goNext, setGoNext] = useState(false);
 
-    const handleAnswerOptionClick = () => {
+    const questionList = props;
+    const randomIndices = id!.toString().split('').map(Number);
+    
+    useEffect(()=>{
+        const templist = questionList["props"];
+        setCurrentList(randomIndices.map(index => templist[index]));
+    },[])
+
+    const handleNextClick = () => {
 		const nextQuestion = currentQuestion + 1;
+        console.log(nextQuestion)
+
 		if (nextQuestion < currentList.length) {
 			setCurrentQuestion(nextQuestion);
             setCurrentProgress(currentProgress + 10);
@@ -93,32 +114,34 @@ const QuestionPage = (props: any) => {
 		}
 	};
 
-    const handleGoBackClick = () => {
+    const handleBackClick = () => {
         const prevQuestion = currentQuestion - 1;
         if(prevQuestion > -1) {
             setCurrentQuestion(prevQuestion);
             setCurrentProgress(currentProgress - 10);
+            setGoNext(false);
         }
     }
 
-    // get the first 5 questions from a random list of questions
-    const RandomQuestion = (qList:{title:string,optional:boolean,type:string}[]) => {
-        var n = qList.length;
-        var result = new Array(n),
-        len = qList.length,
-        taken = new Array(len);
-        if (n > len)
-            throw new RangeError("getRandom: more elements taken than available");
-        while (n--) {
-            var x = Math.floor(Math.random() * len);
-            result[n] = qList[x in taken ? taken[x] : x];
-            taken[x] = --len in taken ? taken[len] : len;
-        }
-        return result.slice(0,5);
-    }
+    // generate an alert if id is null or undefined
+    if (id === null || id === undefined) {
+        return (
+          <Alert variant="danger">
+            The questions are not ready.
+          </Alert>
+        );
+      }
 
-    const currentList = RandomQuestion(questionList);
-    
+    const getAnswer = (answer: any) => {
+       if(currentList[currentProgress].optional) {
+           setGoNext(true);
+       } else if(!currentList[currentProgress].optional) {
+            if(answer){
+                setGoNext(true);
+            }
+       }
+    }
+      
     return(
         <Backgroud>
                 <Stylednav variant="pills" defaultActiveKey="/">
@@ -131,11 +154,10 @@ const QuestionPage = (props: any) => {
                 </Stylednav>
                 <StyleProgressBar now={currentProgress} animated={true}/>
             <QuestionWrapper>
-
-                <Question title={currentProgress.title} optional ={currentProgress.optional} type={currentProgress.type}/>
+                <Question title={currentList[currentProgress].title} optional ={currentList[currentProgress].optional} type={currentList[currentProgress].type} getAnswer={getAnswer}/>
                 <ButtonWrapper>
-                    <StyledButton className = "back">BACK</StyledButton>
-                    <StyledButton className = "next">NEXT</StyledButton>
+                    <StyledButton className = "back" onClick={handleBackClick}>BACK</StyledButton>
+                    <StyledButton className = "next" onClick={handleNextClick}>NEXT</StyledButton>
                 </ButtonWrapper>
             </QuestionWrapper>
         </Backgroud>

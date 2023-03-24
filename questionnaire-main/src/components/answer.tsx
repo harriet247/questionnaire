@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import styled from "styled-components";
-import { Box, Checkbox, FormControl, FormGroup, FormControlLabel,Slider, TextField} from "@mui/material";
+import { Alert,AlertTitle, Box, Checkbox, FormControl, FormGroup, FormControlLabel,Slider, TextField} from "@mui/material";
+import { propTypes } from "react-bootstrap/esm/Image";
 
 const StyledBox = styled(Box)`
 position: absolute;
@@ -16,13 +17,13 @@ const TextFieldWrapper = styled.div`
 position: absolute;
 align-item: center;
 min-width: 30%;
-// left: 40%;
 `;
 
-type QuestionProps = {
+type QuestionProps ={
     title: string;
     optional: boolean;
     type: string;
+    getAnswer: (answer:any)=> void;
 }
 
 const marks = [
@@ -55,12 +56,17 @@ const marks = [
 const Answer = (curr: QuestionProps) => {
     const [clickYes, setClickYes] = useState(false); 
     const [clickNo, setClickNo] = useState(false);
+    const [answerText, setAnswerText] = useState("");
+    const [sliderVal, SetSliderVal] = useState(0);
 
     const handleClickYes = () => {
         setClickYes(!clickYes)
         if(clickNo){
             setClickNo(clickYes);
         } 
+        if(!clickYes){
+            curr.getAnswer("Yes");
+        }
     }
 
     const handleClickNo = () => {
@@ -68,22 +74,31 @@ const Answer = (curr: QuestionProps) => {
         if(clickYes){
             setClickYes(clickNo);
         } 
+        if(!clickNo){
+            curr.getAnswer("No");
+        }
     }
 
-    function valuetext(value: number) {
+    const valuetext = (value: number) => {
         return `${value}`;
       }
       
-      function valueLabelFormat(value: number) {
+    const valueLabelFormat = (value: number) => {
         return marks.findIndex((mark) => mark.value === value);
       }
 
-    const inputProps = {
-        marginTop: "1rem",
-        fontSize: 60
+    const handleSlider = (event: Event, newValue: number | number[]) => {
+        if (newValue < 0 || newValue > 5) {
+            console.error('Invalid slider value:', newValue);
+            // set an error state or show an error message to the user
+          } else {
+            SetSliderVal(newValue as number);
+            curr.getAnswer(newValue);
+          }
     }
 
-       switch(curr.type){
+    try{
+        switch(curr.type){
             case "yesno":
                 return(
                     <FormControl required = {curr.optional} >
@@ -101,10 +116,11 @@ const Answer = (curr: QuestionProps) => {
             case "number":
                 return(
                     <StyledBox>
-                        <Slider
+                        <Slider id="slider"
                             aria-label="Restricted values" defaultValue={0} valueLabelFormat={valueLabelFormat}
                             getAriaValueText={valuetext} step={null} valueLabelDisplay="auto"
                             marks={marks} size = 'medium' max = {5}
+                            onChange={handleSlider}
                         />
                     </StyledBox>
                 );
@@ -112,10 +128,13 @@ const Answer = (curr: QuestionProps) => {
             case "sentence":
                 return(
                     <TextFieldWrapper>
-                        <TextField 
+                        <TextField
                         required = {curr.optional}
                         id="answer-field"
-                        defaultValue=""
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            setAnswerText(e.target.value);
+                            curr.getAnswer(answerText);
+                          }}
                         variant="filled"
                         size="medium"
                         margin="dense"
@@ -126,7 +145,15 @@ const Answer = (curr: QuestionProps) => {
                 );
         
                 
+        }
+    } catch(err){
+        return(
+        <Alert severity="error" >
+            <AlertTitle>Error</AlertTitle>
+            Something went wrong!
+        </Alert>)
     }
+       
 
     return(
         <div><h3>error</h3></div>
