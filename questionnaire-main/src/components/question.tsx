@@ -7,6 +7,7 @@ type QuestionProps = {
     title: string;
     optional: boolean;
     type: string;
+    answer: any;
     getAnswer: (answer:any)=> void;
 }
 
@@ -47,7 +48,7 @@ const Question = (props: QuestionProps) => {
             <h2>{props.title}</h2>
             </div>
             <AnswerWrapper>
-            <Answer title={props.title} optional={props.optional} type={props.type} getAnswer={props.getAnswer}/>
+            <Answer title={props.title} optional={props.optional} type={props.type} answer={props.answer} getAnswer={props.getAnswer}/>
             </AnswerWrapper>
         </QuestionWrapper>
         

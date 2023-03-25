@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import styled from "styled-components";
 import { Alert,AlertTitle, Box, Checkbox, FormControl, FormGroup, FormControlLabel,Slider, TextField} from "@mui/material";
-import { propTypes } from "react-bootstrap/esm/Image";
 
 const StyledBox = styled(Box)`
 position: absolute;
@@ -23,35 +22,18 @@ type QuestionProps ={
     title: string;
     optional: boolean;
     type: string;
+    answer: any;
     getAnswer: (answer:any)=> void;
 }
 
 const marks = [
-    {
-        value: 0,
-        label: '0',
-    },
-    {
-        value: 1,
-        label: '1',
-    },
-    {
-        value: 2,
-        label: '2',
-    },
-    {
-        value: 3,
-        label: '3',
-    },
-    {
-        value: 4,
-        label: '4'
-    },
-    {
-        value: 5,
-        label: '5'
-    }
-];
+    { value: 0, label: '0' },
+    { value: 1, label: '1' },
+    { value: 2, label: '2' },
+    { value: 3, label: '3' },
+    { value: 4, label: '4' },
+    { value: 5, label: '5' },
+  ];
 
 const Answer = (curr: QuestionProps) => {
     const [clickYes, setClickYes] = useState(false); 
@@ -67,6 +49,10 @@ const Answer = (curr: QuestionProps) => {
         if(!clickYes){
             curr.getAnswer("Yes");
         }
+    }
+
+    const handleChecked = (selection: string) => {
+        return selection === curr.answer;
     }
 
     const handleClickNo = () => {
@@ -104,10 +90,10 @@ const Answer = (curr: QuestionProps) => {
                     <FormControl required = {curr.optional} >
                     <FormGroup>
                       <FormControlLabel
-                        control={<Checkbox checked={clickYes} onChange={handleClickYes} name="Yes" color="primary"/>}
+                        control={<Checkbox checked={handleChecked("Yes")} onChange={handleClickYes} name="Yes" color="primary"/>}
                         label="Yes" />
                       <FormControlLabel
-                        control={<Checkbox checked={clickNo} onChange={handleClickNo} name="No" color="primary" />}
+                        control={<Checkbox checked={handleChecked("No")} onChange={handleClickNo} name="No" color="primary" />}
                         label="No"/>
                     </FormGroup>
                   </FormControl>
@@ -117,7 +103,7 @@ const Answer = (curr: QuestionProps) => {
                 return(
                     <StyledBox>
                         <Slider id="slider"
-                            aria-label="Restricted values" defaultValue={0} valueLabelFormat={valueLabelFormat}
+                            aria-label="Restricted values" defaultValue={parseInt(curr.answer)} valueLabelFormat={valueLabelFormat}
                             getAriaValueText={valuetext} step={null} valueLabelDisplay="auto"
                             marks={marks} size = 'medium' max = {5}
                             onChange={handleSlider}
@@ -131,6 +117,7 @@ const Answer = (curr: QuestionProps) => {
                         <TextField
                         required = {curr.optional}
                         id="answer-field"
+                        defaultValue = {curr.answer}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             setAnswerText(e.target.value);
                             curr.getAnswer(answerText);
@@ -150,7 +137,6 @@ const Answer = (curr: QuestionProps) => {
         return(
         <Alert severity="error" >
             <AlertTitle>Error</AlertTitle>
-            Something went wrong!
         </Alert>)
     }
        

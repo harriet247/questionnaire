@@ -64,6 +64,7 @@ text-align: center;
 `;
 
 const StyledButton = styled(Button)`
+position: relative;
 width:120px;
 height:50px;
 padding: 10px 24px;
@@ -78,12 +79,18 @@ min-height: 80%;
 align-items: center;
 justify-content: center;
 `;
-// get the first 5 questions from a random list of questions
-
-// const currentList = RandomQuestion(questionList);
 
 const QuestionPage = (props: any) => {
     const { id } = useParams();
+
+    // generate an alert if id is null or undefined
+    if (id === null || id === undefined) {
+        return (
+        <Alert variant="danger">
+            The questions are not ready.
+        </Alert>
+        );
+    }
 
     const [currentList, setCurrentList] =  useState<any[]>([{
         "title": "",
@@ -93,53 +100,56 @@ const QuestionPage = (props: any) => {
     const [currentProgress, setCurrentProgress] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [goNext, setGoNext] = useState(false);
+    const [currentAnswer, setCurrentAnswer] = useState("");
 
     const questionList = props;
     const randomIndices = id!.toString().split('').map(Number);
     
     useEffect(()=>{
         const templist = questionList["props"];
-        setCurrentList(randomIndices.map(index => templist[index]));
+        const currList = randomIndices.map(index => templist[index]);
+        setCurrentList(currList.map(obj => ({ ...obj, answer: '' })));
     },[])
 
-    const handleNextClick = () => {
-		const nextQuestion = currentQuestion + 1;
-        console.log(nextQuestion)
+    console.log(currentList);
 
-		if (nextQuestion < currentList.length) {
-			setCurrentQuestion(nextQuestion);
-            setCurrentProgress(currentProgress + 10);
-		} else {
-			// show end page
-		}
+    useEffect(() => {
+        const nextQuestion = currentQuestion + 1;
+        if (goNext) {
+          if (nextQuestion < currentList.length) {
+            setCurrentQuestion(nextQuestion);
+            setCurrentProgress(currentProgress + (100 / currentList.length));
+            setGoNext(false); 
+          }else{
+            console.log("end")
+          }
+        }
+      }, [goNext, currentQuestion, currentList.length, currentProgress]);
+
+    const handleNextClick = () => {
+        if(currentList[currentQuestion].optional) {
+            setGoNext(true);
+        } else if(!currentList[currentQuestion].optional) {
+             if(currentAnswer){
+                setGoNext(true);
+             }
+        }
 	};
 
     const handleBackClick = () => {
         const prevQuestion = currentQuestion - 1;
         if(prevQuestion > -1) {
             setCurrentQuestion(prevQuestion);
-            setCurrentProgress(currentProgress - 10);
-            setGoNext(false);
+            setCurrentProgress(currentProgress - (100/currentList.length));
         }
     }
-
-    // generate an alert if id is null or undefined
-    if (id === null || id === undefined) {
-        return (
-          <Alert variant="danger">
-            The questions are not ready.
-          </Alert>
-        );
-      }
-
+  
     const getAnswer = (answer: any) => {
-       if(currentList[currentProgress].optional) {
-           setGoNext(true);
-       } else if(!currentList[currentProgress].optional) {
-            if(answer){
-                setGoNext(true);
-            }
-       }
+        if(answer){
+            setCurrentAnswer(answer);
+            currentList[currentQuestion].answer = answer;
+        }
+        
     }
       
     return(
@@ -154,10 +164,10 @@ const QuestionPage = (props: any) => {
                 </Stylednav>
                 <StyleProgressBar now={currentProgress} animated={true}/>
             <QuestionWrapper>
-                <Question title={currentList[currentProgress].title} optional ={currentList[currentProgress].optional} type={currentList[currentProgress].type} getAnswer={getAnswer}/>
+                <Question title={currentList[currentQuestion].title} optional ={currentList[currentQuestion].optional} type={currentList[currentQuestion].type} answer={currentList[currentQuestion].answer} getAnswer={getAnswer}/>
                 <ButtonWrapper>
-                    <StyledButton className = "back" onClick={handleBackClick}>BACK</StyledButton>
-                    <StyledButton className = "next" onClick={handleNextClick}>NEXT</StyledButton>
+                    <StyledButton className = "back" onClick={()=>handleBackClick()}>BACK</StyledButton>
+                    <StyledButton className = "next" onClick={()=>handleNextClick()}>NEXT</StyledButton>
                 </ButtonWrapper>
             </QuestionWrapper>
         </Backgroud>
