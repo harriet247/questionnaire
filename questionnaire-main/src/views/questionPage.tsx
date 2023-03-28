@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useParams} from "react-router-dom";
+import { useParams, useNavigate} from "react-router-dom";
 import { Alert, ProgressBar, Button, Nav } from 'react-bootstrap';
 import styled from "styled-components";
 import Question from "../components/question";
@@ -101,6 +101,7 @@ const QuestionPage = (props: any) => {
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [goNext, setGoNext] = useState(false);
     const [currentAnswer, setCurrentAnswer] = useState("");
+    const [goToSubmit, setGoToSubmit] = useState(false);
 
     const questionList = props;
     const randomIndices = id!.toString().split('').map(Number);
@@ -109,19 +110,18 @@ const QuestionPage = (props: any) => {
         const templist = questionList["props"];
         const currList = randomIndices.map(index => templist[index]);
         setCurrentList(currList.map(obj => ({ ...obj, answer: '' })));
-    },[])
+    },[]);
 
-    console.log(currentList);
 
     useEffect(() => {
         const nextQuestion = currentQuestion + 1;
         if (goNext) {
           if (nextQuestion < currentList.length) {
             setCurrentQuestion(nextQuestion);
-            setCurrentProgress(currentProgress + (100 / currentList.length));
+            setCurrentProgress(currentProgress +  100 / currentList.length);
             setGoNext(false); 
-          }else{
-            console.log("end")
+          }else if(nextQuestion === currentList.length){
+            setGoToSubmit(true);
           }
         }
       }, [goNext, currentQuestion, currentList.length, currentProgress]);
@@ -129,11 +129,14 @@ const QuestionPage = (props: any) => {
     const handleNextClick = () => {
         if(currentList[currentQuestion].optional) {
             setGoNext(true);
-        } else if(!currentList[currentQuestion].optional) {
-             if(currentAnswer){
-                setGoNext(true);
-             }
-        }
+        } else {
+            const answer = currentList[currentQuestion].answer;
+            if (answer) {
+              setGoNext(true);
+            } else {
+              setGoNext(false);
+            }
+          }
 	};
 
     const handleBackClick = () => {
@@ -142,24 +145,31 @@ const QuestionPage = (props: any) => {
             setCurrentQuestion(prevQuestion);
             setCurrentProgress(currentProgress - (100/currentList.length));
         }
-    }
+    };
   
     const getAnswer = (answer: any) => {
         if(answer){
             setCurrentAnswer(answer);
             currentList[currentQuestion].answer = answer;
         }
-        
-    }
+    };
+
+    const getTitleAndAnswerArray = (questions: any[]): { title: string, answer: any }[] => {
+        return questions.map(({ title, answer }) => ({ title, answer }));  
+    };
+
+
+    const navigate = useNavigate();
+    if(goToSubmit){
+        const data = getTitleAndAnswerArray(currentList);
+        navigate('/submit', { state: data});
+    };
       
     return(
         <Backgroud>
                 <Stylednav variant="pills" defaultActiveKey="/">
                     <StyledNavItem >
                         <Nav.Link href="/">Home</Nav.Link>
-                    </StyledNavItem >
-                    <StyledNavItem >
-                        <Nav.Link href="/contact">Contact Us</Nav.Link>
                     </StyledNavItem >
                 </Stylednav>
                 <StyleProgressBar now={currentProgress} animated={true}/>

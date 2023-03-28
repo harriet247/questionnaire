@@ -45,7 +45,7 @@ const Question = (props: QuestionProps) => {
     return(
         <QuestionWrapper>
             <div className="titleDiv" >
-            <h2>{props.title}</h2>
+            <h2 className={props.optional ? '' : 'required'}>{props.title}{props.optional ? '' : '*'}</h2>
             </div>
             <AnswerWrapper>
             <Answer title={props.title} optional={props.optional} type={props.type} answer={props.answer} getAnswer={props.getAnswer}/>

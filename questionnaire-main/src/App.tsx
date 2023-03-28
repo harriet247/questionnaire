@@ -5,6 +5,8 @@ import './App.css';
 
 import WelcomePage from './views/welcomePage';
 import QuestionPage from './views/questionPage';
+import SubmitPage from './views/submitPage';
+
 import questionList from "./questoinList.json";
 
 
@@ -30,6 +32,7 @@ function App() {
         <Routes>
           <Route path="/" element={<WelcomePage />}/>
           <Route path="/question/:id" element={<QuestionPage props={questionList} />}/>
+          <Route path="/submit" element={<SubmitPage />}/>
         </Routes>
       </Router>
       </Backgroud>

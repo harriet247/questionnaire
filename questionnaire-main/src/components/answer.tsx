@@ -4,7 +4,7 @@ import { Alert,AlertTitle, Box, Checkbox, FormControl, FormGroup, FormControlLab
 
 const StyledBox = styled(Box)`
 position: absolute;
-align-item: center;
+align-items: center;
 boxShadow: 1;
 border: none;
 p: 2;
@@ -38,42 +38,50 @@ const marks = [
 const Answer = (curr: QuestionProps) => {
     const [clickYes, setClickYes] = useState(false); 
     const [clickNo, setClickNo] = useState(false);
-    const [answerText, setAnswerText] = useState("");
+    const [answerText, setAnswerText] = useState(" ");
     const [sliderVal, SetSliderVal] = useState(0);
 
     const handleClickYes = () => {
-        setClickYes(!clickYes)
-        if(clickNo){
+        setClickYes(!clickYes);
+
+        if (clickNo) {
             setClickNo(clickYes);
         } 
-        if(!clickYes){
+        if (!clickYes) {
             curr.getAnswer("Yes");
+            return;
         }
+        curr.getAnswer(" ");
     }
+
+    const handleClickNo = () => {
+        setClickNo(!clickNo);
+        
+        if (clickYes) {
+            setClickYes(clickNo);
+        } 
+        if (!clickNo) {
+            curr.getAnswer("No");
+            return;
+        }
+        curr.getAnswer(" ");
+    }
+
 
     const handleChecked = (selection: string) => {
         return selection === curr.answer;
     }
 
-    const handleClickNo = () => {
-        setClickNo(!clickNo)
-        if(clickYes){
-            setClickYes(clickNo);
-        } 
-        if(!clickNo){
-            curr.getAnswer("No");
-        }
-    }
 
     const valuetext = (value: number) => {
         return `${value}`;
       }
       
-    const valueLabelFormat = (value: number) => {
-        return marks.findIndex((mark) => mark.value === value);
+    const valueLabelFormat = (index: number) => {
+        return marks.findIndex((mark) => mark.value === index);
       }
 
-    const handleSlider = (event: Event, newValue: number | number[]) => {
+    const handleSlider = (e: Event, newValue: number | number[]) => {
         if (newValue < 0 || newValue > 5) {
             console.error('Invalid slider value:', newValue);
             // set an error state or show an error message to the user
@@ -91,7 +99,8 @@ const Answer = (curr: QuestionProps) => {
                     <FormGroup>
                       <FormControlLabel
                         control={<Checkbox checked={handleChecked("Yes")} onChange={handleClickYes} name="Yes" color="primary"/>}
-                        label="Yes" />
+                        label="Yes" 
+                        />
                       <FormControlLabel
                         control={<Checkbox checked={handleChecked("No")} onChange={handleClickNo} name="No" color="primary" />}
                         label="No"/>
@@ -103,7 +112,7 @@ const Answer = (curr: QuestionProps) => {
                 return(
                     <StyledBox>
                         <Slider id="slider"
-                            aria-label="Restricted values" defaultValue={parseInt(curr.answer)} valueLabelFormat={valueLabelFormat}
+                            aria-label="Restricted values" defaultValue={parseInt(curr.answer)?0:parseInt(curr.answer)} valueLabelFormat={valueLabelFormat}
                             getAriaValueText={valuetext} step={null} valueLabelDisplay="auto"
                             marks={marks} size = 'medium' max = {5}
                             onChange={handleSlider}
@@ -119,8 +128,9 @@ const Answer = (curr: QuestionProps) => {
                         id="answer-field"
                         defaultValue = {curr.answer}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            setAnswerText(e.target.value);
-                            curr.getAnswer(answerText);
+                            const inputValue = e.target.value;
+                            setAnswerText(inputValue);
+                            curr.getAnswer(inputValue);
                           }}
                         variant="filled"
                         size="medium"
