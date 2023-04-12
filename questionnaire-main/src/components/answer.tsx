@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import { Alert, AlertTitle, Box, Checkbox, FormControl, FormGroup, FormControlLabel, Slider, TextField} from "@mui/material";
 
@@ -38,10 +38,16 @@ const marks = [
 const Answer = (curr: QuestionProps) => {
     const [clickYes, setClickYes] = useState(false); 
     const [clickNo, setClickNo] = useState(false);
-    const [answerText, setAnswerText] = useState("");
-    const [sliderVal, SetSliderVal] = useState(0);
+    const [answerText, setAnswerText] = useState(curr.answer?curr.answer:"");
+    const [sliderVal, SetSliderVal] = useState(curr.answer?curr.answer:0);
 
-    console.log(curr);
+    useEffect(() => {
+        if(curr.type === "number"){
+            SetSliderVal(curr.answer);
+        } else if(curr.type === "sentence"){
+            setAnswerText(curr.answer);
+        }
+    }, [curr.answer])
 
     const handleClickYes = () => {
         setClickYes(!clickYes);
@@ -74,7 +80,6 @@ const Answer = (curr: QuestionProps) => {
         return selection === curr.answer;
     }
 
-
     const valuetext = (value: number) => {
         return `${value}`;
       }
@@ -92,7 +97,7 @@ const Answer = (curr: QuestionProps) => {
                 );
           } else {
             SetSliderVal(newValue as number);
-            curr.getAnswer(sliderVal);
+            curr.getAnswer(newValue);
           }
     }
 
