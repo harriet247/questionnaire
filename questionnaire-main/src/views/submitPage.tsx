@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React from "react";
 import {useLocation} from "react-router-dom";
 import { Button, Nav } from 'react-bootstrap';
 import styled from "styled-components";
@@ -67,7 +67,6 @@ background-color: #D3D3D3;
 text-align: center;
 `;
 
-
 type ResultProps ={
     title: string;
     answer: any;
@@ -75,32 +74,32 @@ type ResultProps ={
 
 const SubmitPage = (props: any) => {
 
-    const location = useLocation();
-    const data: ResultProps[] = location.state;
+  const location = useLocation();
+  const data: ResultProps[] = location.state;
 
-    const handleClick = () => {
-        alert("submit successfully");
-    }
-    return(
-        <Backgroud>
-                <Stylednav variant="pills" defaultActiveKey="/">
-                <StyledNavItem >
-                        <Nav.Link href="/">Home</Nav.Link>
-                    </StyledNavItem >
-                </Stylednav>
-                <ResultWrapper>
-                {data.map((d: ResultProps) => (
-                    <ResultBlock key={d.title}>
-                    <h3>{d.title}</h3>
-                    <p>{d.answer}</p>
-                    </ResultBlock>
-                ))}
-                </ResultWrapper>
-                <ButtonWrapper>
-                    <Button onClick={handleClick}>Submit</Button>
-                </ButtonWrapper>
-        </Backgroud>
-    );
+  const handleClick = () => {
+      alert("submit successfully");
+  }
+  return(
+      <Backgroud>
+              <Stylednav variant="pills" defaultActiveKey="/">
+              <StyledNavItem >
+                      <Nav.Link href="/">Home</Nav.Link>
+                  </StyledNavItem >
+              </Stylednav>
+              <ResultWrapper>
+              {data.map((d: ResultProps) => (
+                  <ResultBlock key={d.title}>
+                  <h3>{d.title}</h3>
+                  <p>{d.answer}</p>
+                  </ResultBlock>
+              ))}
+              </ResultWrapper>
+              <ButtonWrapper>
+                  <Button onClick={handleClick}>Submit</Button>
+              </ButtonWrapper>
+      </Backgroud>
+  );
 }
 
 export default SubmitPage;

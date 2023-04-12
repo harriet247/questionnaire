@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { useParams, useNavigate} from "react-router-dom";
+import { useNavigate, useLocation} from "react-router-dom";
 import { Alert, ProgressBar, Button, Nav } from 'react-bootstrap';
 import styled from "styled-components";
 import Question from "../components/question";
@@ -81,7 +81,8 @@ justify-content: center;
 `;
 
 const QuestionPage = (props: any) => {
-    const { id } = useParams();
+    const location = useLocation();
+    const id: number = location.state;
 
     // generate an alert if id is null or undefined
     if (id === null || id === undefined) {
@@ -109,7 +110,7 @@ const QuestionPage = (props: any) => {
     useEffect(()=>{
         const templist = questionList["props"];
         const currList = randomIndices.map(index => templist[index]);
-        setCurrentList(currList.map(obj => ({ ...obj, answer: '' })));
+        setCurrentList(currList.map(obj => ({ ...obj, answer: "" })));
     },[]);
 
 
@@ -131,9 +132,11 @@ const QuestionPage = (props: any) => {
             setGoNext(true);
         } else {
             const answer = currentList[currentQuestion].answer;
-            if (answer) {
+            if (typeof answer === "number" && answer >= 0) {
               setGoNext(true);
-            } else {
+            } else if(typeof answer === "string" && answer.trim()){
+              setGoNext(true);
+            }else {
               setGoNext(false);
             }
           }
@@ -148,9 +151,9 @@ const QuestionPage = (props: any) => {
     };
   
     const getAnswer = (answer: any) => {
-        if(answer){
-            setCurrentAnswer(answer);
-            currentList[currentQuestion].answer = answer;
+        if(answer !== ""){
+          setCurrentAnswer(answer);
+          currentList[currentQuestion].answer = answer;
         }
     };
 
@@ -162,7 +165,7 @@ const QuestionPage = (props: any) => {
     const navigate = useNavigate();
     if(goToSubmit){
         const data = getTitleAndAnswerArray(currentList);
-        navigate('/submit', { state: data});
+        navigate('/submit', {state: data});
     };
       
     return(

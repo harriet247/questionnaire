@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import styled from "styled-components";
-import { Alert,AlertTitle, Box, Checkbox, FormControl, FormGroup, FormControlLabel,Slider, TextField} from "@mui/material";
+import { Alert, AlertTitle, Box, Checkbox, FormControl, FormGroup, FormControlLabel, Slider, TextField} from "@mui/material";
 
 const StyledBox = styled(Box)`
 position: absolute;
@@ -38,8 +38,10 @@ const marks = [
 const Answer = (curr: QuestionProps) => {
     const [clickYes, setClickYes] = useState(false); 
     const [clickNo, setClickNo] = useState(false);
-    const [answerText, setAnswerText] = useState(" ");
+    const [answerText, setAnswerText] = useState("");
     const [sliderVal, SetSliderVal] = useState(0);
+
+    console.log(curr);
 
     const handleClickYes = () => {
         setClickYes(!clickYes);
@@ -83,11 +85,14 @@ const Answer = (curr: QuestionProps) => {
 
     const handleSlider = (e: Event, newValue: number | number[]) => {
         if (newValue < 0 || newValue > 5) {
-            console.error('Invalid slider value:', newValue);
-            // set an error state or show an error message to the user
+            return (
+                <Alert severity="error" >
+                        <AlertTitle>Slider value out of range</AlertTitle>
+                </Alert>
+                );
           } else {
             SetSliderVal(newValue as number);
-            curr.getAnswer(newValue);
+            curr.getAnswer(sliderVal);
           }
     }
 
@@ -114,7 +119,7 @@ const Answer = (curr: QuestionProps) => {
                         <Slider id="slider"
                             aria-label="Restricted values" defaultValue={parseInt(curr.answer)?0:parseInt(curr.answer)} valueLabelFormat={valueLabelFormat}
                             getAriaValueText={valuetext} step={null} valueLabelDisplay="auto"
-                            marks={marks} size = 'medium' max = {5}
+                            marks={marks} size = 'medium' min = {0} max = {5} value = {sliderVal}
                             onChange={handleSlider}
                         />
                     </StyledBox>
@@ -152,7 +157,9 @@ const Answer = (curr: QuestionProps) => {
        
 
     return(
-        <div><h3>error</h3></div>
+        <Alert severity="error" >
+            <AlertTitle>Answer component failed</AlertTitle>
+        </Alert>
         
     )
     

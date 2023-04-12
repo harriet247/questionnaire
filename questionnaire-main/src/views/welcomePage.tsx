@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import questionList from "../questoinList.json";
 
 
@@ -24,10 +24,10 @@ const WelcomePage = (props: any) => {
         return randomNumber;
       }
 
+    const navigate = useNavigate();
     if(goToQuestion){
         const id = random5(questionList);
-        console.log(id);
-        return <Navigate to={`/question/${id}`} />;
+        navigate('/question', {state: id})
     }
 
     return(

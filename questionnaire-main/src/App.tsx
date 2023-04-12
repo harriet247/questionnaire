@@ -31,7 +31,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<WelcomePage />}/>
-          <Route path="/question/:id" element={<QuestionPage props={questionList} />}/>
+          <Route path="/question" element={<QuestionPage props={questionList} />}/>
           <Route path="/submit" element={<SubmitPage />}/>
         </Routes>
       </Router>
